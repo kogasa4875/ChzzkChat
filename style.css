@@ -1,4 +1,4 @@
-/* 기본 설정 */
+/* 기본 설정: 모든 화면에 공통 적용 */
 body {
     font-family: 'Noto Sans KR', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
@@ -17,10 +17,11 @@ body {
     display: flex;
     flex-direction: column;
     border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* 부드러운 그림자 */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     background-color: #b2c7d9;
     overflow: hidden;
-    position: relative; /* 자식 요소 포지셔닝을 위해 */
+    position: relative;
+    transition: all 0.3s ease-in-out; /* 부드러운 전환 효과 */
 }
 
 /* 상단 헤더 */
@@ -34,14 +35,14 @@ body {
     border-bottom: 1px solid #e0e0e0;
 }
 
-/* 채팅 메시지 목록 영역 */
+/* 메시지 영역 */
 .chat-messages {
     flex-grow: 1;
     padding: 15px 10px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 10px; /* 메시지 사이 간격 */
+    gap: 10px;
 }
 
 /* 스크롤바 커스텀 */
@@ -49,11 +50,11 @@ body {
     width: 8px;
 }
 .chat-messages::-webkit-scrollbar-thumb {
-    background-color: #889bb0; /* 짙은 파란색 */
+    background-color: #889bb0;
     border-radius: 10px;
 }
 .chat-messages::-webkit-scrollbar-track {
-    background-color: transparent; /* 투명한 트랙 */
+    background-color: transparent;
 }
 
 /* 입력창 영역 */
@@ -128,7 +129,7 @@ body {
 }
 .message-bubble {
     padding: 10px 12px;
-    border-radius: 18px; /* 더 둥근 모서리 */
+    border-radius: 18px;
     word-break: break-word;
     font-size: 0.9em;
     line-height: 1.4;
@@ -138,12 +139,12 @@ body {
 .message-row.other .message-bubble {
     background-color: #ffffff;
     color: #333;
-    border-top-left-radius: 4px; /* 꼬리표 */
+    border-top-left-radius: 4px;
 }
 .message-row.mine .message-bubble {
     background-color: #ffe000;
     color: #3c1e1e;
-    border-top-right-radius: 4px; /* 꼬리표 */
+    border-top-right-radius: 4px;
 }
 .message-time {
     font-size: 0.7em;
@@ -156,4 +157,45 @@ body {
     align-self: flex-start;
     margin-right: 5px;
     margin-left: 0;
+}
+
+/* =======================================
+   미디어 쿼리: 태블릿 및 모바일 환경 최적화
+   ======================================= */
+@media (max-width: 768px) {
+    body {
+        /* 태블릿에서는 전체 화면을 차지하도록 설정 */
+        align-items: flex-start;
+        min-height: 100vh;
+        background-color: #b2c7d9; /* 배경색 통일 */
+    }
+
+    .chat-wrapper {
+        width: 100vw; /* 화면 너비 전체를 사용 */
+        height: 100vh; /* 화면 높이 전체를 사용 */
+        border-radius: 0; /* 모서리 둥근 효과 제거 */
+        box-shadow: none; /* 그림자 제거 */
+    }
+
+    .chat-header, .chat-input-area {
+        z-index: 10; /* 입력창과 헤더가 항상 최상단에 보이도록 */
+    }
+
+    .chat-messages {
+        padding-bottom: 70px; /* 입력창과 겹치지 않도록 여백 추가 */
+    }
+    
+    .profile-img {
+        width: 35px;
+        height: 35px;
+        margin-right: 8px;
+    }
+
+    .message-content {
+        max-width: 80%; /* 태블릿에서는 더 넓게 사용 */
+    }
+
+    .message-bubble {
+        padding: 9px 11px;
+    }
 }
