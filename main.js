@@ -3,7 +3,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendButton = document.getElementById('send-button');
     const chatMessages = document.querySelector('.chat-messages');
 
-    // 테스트를 위한 더미 메시지 추가 함수
+    // **여러분의 치지직 채널 ID와 백엔드 서버 주소**
+    const CHAT_CHANNEL_ID = 'f5feedab25060a675ed62f3348e625cf';
+    const BACKEND_URL = 'https://chzzk-chat-backend.up.railway.app';
+    
+    // TODO: 이 액세스 토큰은 실제 로그인 과정을 통해 얻어야 합니다.
+    // 현재는 테스트를 위해 유효한 토큰을 임시로 넣을 수 있습니다.
+    const YOUR_ACCESS_TOKEN = '여기에 여러분의 액세스 토큰을 넣으세요';
+
+    // Netlify Function을 통해 웹소켓 URL을 받아옵니다.
+    const API_URL = `/.netlify/functions/chzzk-chat?channelId=${CHAT_CHANNEL_ID}`;
+
     function addMessage(sender, message, isMine) {
         const messageRow = document.createElement('div');
         messageRow.classList.add('message-row');
@@ -12,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             messageRow.classList.add('other');
         }
-
         const now = new Date();
         const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
@@ -25,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         chatMessages.appendChild(messageRow);
-        chatMessages.scrollTop = chatMessages.scrollHeight; // 스크롤을 항상 아래로
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     // 예시 메시지
@@ -33,19 +42,47 @@ document.addEventListener('DOMContentLoaded', () => {
     addMessage('시청자1', '오늘 방송 재밌네요!', false);
     addMessage('나', '감사합니다!', true);
 
-    // 웹소켓 URL을 받아오는 주소
-    const API_URL = `https://[랜덤문자].up.railway.app/.netlify/functions/chzzk-chat?channelId=${channelId}`;
-    // TODO: 이 변수들을 실제 로그인 과정을 통해 얻은 값으로 교체해야 합니다.
-    // 현재는 임시로 값을 넣어 테스트할 수 있습니다.
-    const YOUR_ACCESS_TOKEN = '여기에 여러분의 액세스 토큰을 넣으세요';
-    const CHAT_CHANNEL_ID = '여러분이 원하는 채팅 채널 ID';
+    // Netlify Function을 호출하여 웹소켓 URL 가져오기
+    fetch(API_URL)
+        .then(response => response.json())
+        .then(data => {
+            if (data.webSocketUrl) {
+                const ws = new WebSocket(data.webSocketUrl);
+
+                ws.onmessage = (event) => {
+                    const messageData = JSON.parse(event.data);
+                    if (messageData.T === 'chat') {
+                        const sender = messageData.sender.nickname;
+                        const message = messageData.message;
+                        const isMine = messageData.sender.nickname === '자신의 닉네임';
+                        addMessage(sender, message, isMine);
+                    }
+                };
+
+                ws.onopen = () => {
+                    console.log("WebSocket 연결 성공");
+                };
+                ws.onclose = () => {
+                    console.log("WebSocket 연결 종료");
+                };
+                ws.onerror = (error) => {
+                    console.error("WebSocket 오류 발생:", error);
+                };
+            } else {
+                addMessage('시스템', data.error || '채팅 정보를 불러올 수 없습니다.', false);
+            }
+        })
+        .catch(error => {
+            console.error('API 호출 실패:', error);
+            addMessage('시스템', '채팅 서버 연결에 실패했습니다.', false);
+        });
 
     sendButton.addEventListener('click', () => {
         const message = chatInput.value.trim();
 
         if (message && YOUR_ACCESS_TOKEN) {
-            // 백엔드 서버의 메시지 전송 API를 호출합니다.
-            fetch('chzzk-chat-backend.railway.internal', {
+            // Railway 백엔드 서버로 메시지 전송 API를 호출
+            fetch(`${BACKEND_URL}/api/send-chat`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -60,22 +97,20 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if (data.status === 200) {
                     console.log('메시지 전송 성공:', data);
-                    // 성공적으로 전송되면 화면에도 메시지를 추가합니다.
                     addMessage('나', message, true);
-                    chatInput.value = ''; // 입력창 비우기
+                    chatInput.value = '';
                 } else {
                     console.error('메시지 전송 실패:', data.error);
                     addMessage('시스템', '메시지 전송에 실패했습니다.', false);
                 }
             })
             .catch(error => {
-                console.error('네트워크 오류:', error);
+                console.log('네트워크 오류:', error);
                 addMessage('시스템', '서버와 연결할 수 없습니다.', false);
             });
         }
     });
 
-    // Enter 키 입력 시 메시지 전송
     chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             sendButton.click();
