@@ -10,14 +10,28 @@ exports.handler = async (event) => {
     };
   }
 
-  try {
-    // 1. live-status 엔드포인트에서 라이브 정보 가져오기
-    const liveStatusResponse = await fetch(`https://api.chzzk.naver.com/service/v1/channels/${channelId}/live-status`);
-    
-    if (!liveStatusResponse.ok) {
-      throw new Error(`Failed to fetch live status: ${liveStatusResponse.statusText}`);
+  // 재시도 로직을 위한 헬퍼 함수
+  const fetchWithRetry = async (url, options = {}, retries = 3) => {
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response;
+    } catch (error) {
+      const isNetworkError = error.message.includes('Failed to fetch') || error.message.includes('ECONNRESET');
+      if (retries > 0 && isNetworkError) {
+        console.log(`Fetch failed, retrying... (${retries} retries left)`);
+        await new Promise(res => setTimeout(res, 1000)); // 1초 대기 후 재시도
+        return fetchWithRetry(url, options, retries - 1);
+      }
+      throw error;
     }
-    
+  };
+
+  try {
+    // live-status 엔드포인트에서 라이브 정보 가져오기
+    const liveStatusResponse = await fetchWithRetry(`https://api.chzzk.naver.com/service/v1/channels/${channelId}/live-status`);
     const liveStatusData = await liveStatusResponse.json();
     const liveId = liveStatusData.content?.liveId;
 
@@ -28,8 +42,8 @@ exports.handler = async (event) => {
       };
     }
     
-    // 2. 채팅 채널 ID를 가져오기
-    const chatInfoResponse = await fetch(`https://api.chzzk.naver.com/service/v1/chats/access-token?chatChannelId=${liveId}&poll=false`);
+    // 채팅 채널 ID를 가져오기
+    const chatInfoResponse = await fetchWithRetry(`https://api.chzzk.naver.com/service/v1/chats/access-token?chatChannelId=${liveId}&poll=false`);
     const chatInfoData = await chatInfoResponse.json();
     const chatChannelId = chatInfoData.content?.chatChannelId;
 
@@ -37,7 +51,6 @@ exports.handler = async (event) => {
       throw new Error("Failed to get chat channel ID.");
     }
     
-    // 3. 웹소켓 URL 생성
     const webSocketUrl = `wss://api.chzzk.naver.com/service/v1/chats/ws?chatChannelId=${chatChannelId}`;
 
     return {
