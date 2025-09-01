@@ -34,7 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
     addMessage('나', '감사합니다!', true);
 
    // ... 기존 코드 ...
-
+// 웹소켓 URL을 받아오는 주소
+const API_URL = `https://[랜덤문자].up.railway.app/.netlify/functions/chzzk-chat?channelId=${channelId}`;
 // TODO: 이 변수들을 실제 로그인 과정을 통해 얻은 값으로 교체해야 합니다.
 // 현재는 임시로 값을 넣어 테스트할 수 있습니다.
 const YOUR_ACCESS_TOKEN = '여기에 여러분의 액세스 토큰을 넣으세요'; 
@@ -45,7 +46,7 @@ sendButton.addEventListener('click', () => {
 
     if (message && YOUR_ACCESS_TOKEN) {
         // 백엔드 서버의 메시지 전송 API를 호출합니다.
-        fetch('http://localhost:3000/api/send-chat', {
+        fetch('chzzk-chat-backend.railway.internal', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
