@@ -88,4 +88,4 @@ sendButton.addEventListener('click', () => {
 
     // TODO: 여기에 치지직 API를 통해 실시간 채팅 메시지를 받아와 addMessage 함수로 추가하는 로직을 구현해야 합니다.
     // 백엔드 서버를 통해 치지직 WebSocket에 연결하고, 메시지를 프론트엔드로 전달받아야 합니다.
-});
+);
