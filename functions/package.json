@@ -1,0 +1,9 @@
+{
+  "name": "chzzk-kakaotalk-ui",
+  "version": "1.0.0",
+  "description": "치지직 채팅을 카카오톡 UI로 보여주는 웹 애플리케이션",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "axios-retry": "^4.0.0" 
+  }
+}
