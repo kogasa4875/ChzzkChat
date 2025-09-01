@@ -1,8 +1,15 @@
 {
-  "name": "chzzk-chat-functions",
+  "name": "chzzk-kakaotalk-ui",
   "version": "1.0.0",
-  "description": "Netlify functions for Chzzk chat.",
+  "description": "치지직 채팅을 카카오톡 UI로 보여주는 웹 애플리케이션",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "axios": "^1.6.8"
+    "axios": "^1.6.8" 
   }
 }
