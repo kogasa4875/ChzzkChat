@@ -1,4 +1,4 @@
-/* 기본 설정: 모든 화면에 공통 적용 */
+/* 기본 설정 */
 body {
     font-family: 'Noto Sans KR', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
@@ -7,7 +7,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #dee1e6; /* 카카오톡 배경색 */
+    background-color: #dee1e6;
 }
 
 /* 전체 채팅창 컨테이너 */
@@ -21,21 +21,10 @@ body {
     background-color: #b2c7d9;
     overflow: hidden;
     position: relative;
-    transition: all 0.3s ease-in-out; /* 부드러운 전환 효과 */
+    transition: all 0.3s ease-in-out;
 }
 
-/* 상단 헤더 */
-.chat-header {
-    background-color: #f7f7f7;
-    padding: 15px;
-    text-align: center;
-    font-size: 1.1em;
-    font-weight: bold;
-    color: #333;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-/* 메시지 영역 */
+/* 채팅 메시지 목록 영역 */
 .chat-messages {
     flex-grow: 1;
     padding: 15px 10px;
@@ -159,30 +148,27 @@ body {
     margin-left: 0;
 }
 
-/* =======================================
-   미디어 쿼리: 태블릿 및 모바일 환경 최적화
-   ======================================= */
+/* 태블릿 및 모바일 환경 최적화 */
 @media (max-width: 768px) {
     body {
-        /* 태블릿에서는 전체 화면을 차지하도록 설정 */
         align-items: flex-start;
         min-height: 100vh;
-        background-color: #b2c7d9; /* 배경색 통일 */
+        background-color: #b2c7d9;
     }
 
     .chat-wrapper {
-        width: 100vw; /* 화면 너비 전체를 사용 */
-        height: 100vh; /* 화면 높이 전체를 사용 */
-        border-radius: 0; /* 모서리 둥근 효과 제거 */
-        box-shadow: none; /* 그림자 제거 */
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
     }
 
-    .chat-header, .chat-input-area {
-        z-index: 10; /* 입력창과 헤더가 항상 최상단에 보이도록 */
+    .chat-input-area {
+        z-index: 10;
     }
 
     .chat-messages {
-        padding-bottom: 70px; /* 입력창과 겹치지 않도록 여백 추가 */
+        padding-bottom: 70px;
     }
     
     .profile-img {
@@ -192,7 +178,7 @@ body {
     }
 
     .message-content {
-        max-width: 80%; /* 태블릿에서는 더 넓게 사용 */
+        max-width: 80%;
     }
 
     .message-bubble {
